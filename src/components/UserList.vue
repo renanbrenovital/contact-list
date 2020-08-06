@@ -8,6 +8,7 @@
       </div>
     </header>
     <ul class="mdc-list inline-demo-list mdc-list--avatar-list">
+      <li class="mdc-list-item mdc-ripple-upgraded" v-if="users.length <= 0">Nenhum contado cadastrado</li>
       <li class="mdc-list-item mdc-ripple-upgraded" v-for="(user, index) in users" v-bind:key="user.cpf">
         <span class="material-icons mdc-card__action mdc-card__action--icon">
           person
@@ -29,26 +30,24 @@ export default {
   name: 'UserList',
   data() {
     return {
-      users: [
-        {
-          "cpf": "04080757247",
-          "name": "José Andrade",
-          "email": "jose@test.com.br",
-          "phone": "11987654321"
-        },
-        {
-          "cpf": "77797584192",
-          "name": "Manoel Silva",
-          "email": "manoel@test.com.br",
-          "phone": "11987654321"
-        },
-        {
-          "cpf": "45486737688",
-          "name": "Augusto Maier",
-          "email": "augusto@test.com.br",
-          "phone": "11987654321"
-        }
-      ]
+      users: []
+    }
+  },
+  mounted() {
+    if (localStorage.users) {
+      this.users = JSON.parse(localStorage.users);
+    }
+    else 
+    {
+      fetch('https://api.mocki.io/v1/a2790e8c')
+        .then(response => response.json())
+        .then(data => this.users = data)
+        .catch(error => console.error(error))
+    }    
+  },
+  watch: {
+    users() {
+      localStorage.setItem('users', JSON.stringify(this.users))
     }
   },
   methods: {
