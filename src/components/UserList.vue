@@ -22,53 +22,20 @@
         </span>
       </li>
     </ul>
-    <div class="form">
-      <label class="mdc-text-field mdc-text-field--filled">
-        <span class="mdc-text-field__ripple"></span>
-        <input class="mdc-text-field__input" type="text" aria-labelledby="cpf" v-model="form.cpf">
-        <span class="mdc-floating-label" id="cpf">CPF</span>
-        <span class="mdc-line-ripple"></span>
-      </label>
-      <label class="mdc-text-field mdc-text-field--filled">
-        <span class="mdc-text-field__ripple"></span>
-        <input class="mdc-text-field__input" type="text" aria-labelledby="name" v-model="form.name">
-        <span class="mdc-floating-label" id="cpf">Nome Completo</span>
-        <span class="mdc-line-ripple"></span>
-      </label>
-      <label class="mdc-text-field mdc-text-field--filled">
-        <span class="mdc-text-field__ripple"></span>
-        <input class="mdc-text-field__input" type="text" aria-labelledby="email" v-model="form.email">
-        <span class="mdc-floating-label" id="email">E-mail</span>
-        <span class="mdc-line-ripple"></span>
-      </label>
-      <label class="mdc-text-field mdc-text-field--filled">
-        <span class="mdc-text-field__ripple"></span>
-        <input class="mdc-text-field__input" type="text" aria-labelledby="phone" v-model="form.phone">
-        <span class="mdc-floating-label" id="phone">Telefone</span>
-        <span class="mdc-line-ripple"></span>
-      </label>
-      <div class="mdc-touch-target-wrapper">
-        <button class="mdc-button mdc-button--touch" v-on:click="createUser">
-          <div class="mdc-button__ripple"></div>
-          <span class="mdc-button__label">Cadastrar Contato</span>
-          <div class="mdc-button__touch"></div>
-        </button>
-      </div>
-    </div>
+    <UserForm v-on:create-user="createUser" />
   </div>
 </template>
 
 <script>
+import UserForm from './UserForm.vue';
+
 export default {
   name: 'UserList',
+  components: {
+    UserForm
+  },
   data() {
     return {
-      form: {
-        cpf: '',
-        name: '',
-        email: '',
-        phone: ''
-      },
       users: []
     }
   },
@@ -88,13 +55,8 @@ export default {
           .catch(error => console.error(error))
       } 
     },
-    createUser() {
-      this.users.push({
-        cpf: this.form.cpf,
-        name: this.form.name,
-        email: this.form.email,
-        phone: this.form.phone
-      });
+    createUser(user) {
+      this.users.push(user);
     },
     deleteUser(index) {
       this.users.splice(index, 1);
@@ -112,7 +74,7 @@ export default {
 </script>
 
 <style scoped>
-.mdc-list {
+.fab-add {
   margin-top: 100px;
 }
 .form {
