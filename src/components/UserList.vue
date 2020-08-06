@@ -34,30 +34,33 @@ export default {
     }
   },
   mounted() {
-    if (localStorage.users) {
-      this.users = JSON.parse(localStorage.users);
-    }
-    else 
-    {
-      fetch('https://api.mocki.io/v1/a2790e8c')
-        .then(response => response.json())
-        .then(data => this.users = data)
-        .catch(error => console.error(error))
-    }    
-  },
-  watch: {
-    users() {
-      localStorage.setItem('users', JSON.stringify(this.users))
-    }
+    this.getUsers()
   },
   methods: {
+    getUsers() {
+      if (localStorage.users) {
+        this.users = JSON.parse(localStorage.users)
+      }
+      else 
+      {
+        fetch('https://api.mocki.io/v1/a2790e8c')
+          .then(response => response.json())
+          .then(data => this.users = data)
+          .catch(error => console.error(error))
+      } 
+    },
     deleteUser(index) {
       this.users.splice(index, 1);
     },
     editUser(index) {
       console.log('edit user:', index);
     }
-  }
+  },
+  watch: {
+    users() {
+      localStorage.setItem('users', JSON.stringify(this.users))
+    }
+  },
 }
 </script>
 
