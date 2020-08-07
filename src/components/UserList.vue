@@ -1,12 +1,6 @@
 <template>
   <div>
-    <header class="mdc-top-app-bar mdc-top-app-bar--short">
-      <div class="mdc-top-app-bar__row">
-        <section class="mdc-top-app-bar__section mdc-top-app-bar__section--align-start">
-          <span class="mdc-top-app-bar__title">Contatos</span>
-        </section>
-      </div>
-    </header>
+    <Header v-bind:title="title" />
     <ul class="mdc-list inline-demo-list mdc-list--avatar-list">
       <li class="mdc-list-item mdc-ripple-upgraded" v-if="users.length <= 0">Nenhum contado cadastrado</li>
       <li class="mdc-list-item mdc-ripple-upgraded" v-for="(user, index) in users" v-bind:key="user.cpf">
@@ -17,26 +11,30 @@
           {{user.name}}
         </span>
         <span aria-hidden="true" class="mdc-list-item__meta">
-          <button class="material-icons mdc-icon-button mdc-card__action mdc-card__action--icon" title="Editar Usuário" v-on:click="editUser(index)">edit</button>
+          <button class="material-icons mdc-icon-button mdc-card__action mdc-card__action--icon" title="Editar Usuário" v-on:click="editUser(user)">edit</button>
           <button class="material-icons mdc-icon-button mdc-card__action mdc-card__action--icon" title="Deletar Usuário" v-on:click="deleteUser(index)">delete</button>
         </span>
       </li>
     </ul>
-    <UserForm v-on:create-user="createUser" />
+    <UserForm v-on:save-user="saveUser" v-bind:user="user" />
   </div>
 </template>
 
 <script>
-import UserForm from './UserForm.vue';
+import Header from './Header.vue'
+import UserForm from './UserForm.vue'
 
 export default {
   name: 'UserList',
   components: {
+    Header,
     UserForm
   },
   data() {
     return {
-      users: []
+      title: 'Contatos',
+      users: [],
+      user: {}
     }
   },
   mounted() {
@@ -55,37 +53,28 @@ export default {
           .catch(error => console.error(error))
       } 
     },
-    createUser(user) {
-      this.users.push(user);
+    editUser(userData) {
+      this.user = userData
+    },
+    saveUser(userData) {
+      console.log(JSON.stringify(userData) === '({})')
+      // console.table(userData)
     },
     deleteUser(index) {
-      this.users.splice(index, 1);
+      this.users.splice(index, 1)
     },
-    editUser(index) {
-      console.log('edit user:', index);
-    }
   },
   watch: {
     users() {
       localStorage.users = JSON.stringify(this.users)
+      this.user = {}
     }
   },
 }
 </script>
 
 <style scoped>
-.fab-add {
+.mdc-list {
   margin-top: 100px;
-}
-.form {
-  height: 50vh;
-  width: 50vw;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-}
-label {
-  margin-bottom: 10px;
 }
 </style>
