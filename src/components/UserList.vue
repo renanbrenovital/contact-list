@@ -1,8 +1,13 @@
 <template>
   <div>
     <Header v-bind:title="title" />
+    <UserForm v-on:save-user="saveUser" v-bind:user="user" />
     <ul class="mdc-list inline-demo-list mdc-list--avatar-list">
-      <li class="mdc-list-item mdc-ripple-upgraded" v-if="users.length <= 0">Nenhum contado cadastrado</li>
+      <li class="mdc-list-item mdc-ripple-upgraded" v-if="users.length <= 0">
+        <span class="mdc-list-item__text no-register">
+          Nenhum contado cadastrado
+        </span>
+      </li>
       <li class="mdc-list-item mdc-ripple-upgraded" v-for="(user, index) in users" v-bind:key="user.cpf">
         <span class="material-icons mdc-card__action mdc-card__action--icon">
           person
@@ -16,7 +21,6 @@
         </span>
       </li>
     </ul>
-    <UserForm v-on:save-user="saveUser" v-bind:user="user" />
   </div>
 </template>
 
@@ -32,7 +36,10 @@ export default {
   },
   data() {
     return {
-      title: 'Contatos',
+      title: {
+        header: 'Contatos',
+        button: 'Novo'
+      },
       users: [],
       user: {}
     }
@@ -57,8 +64,7 @@ export default {
       this.user = userData
     },
     saveUser(userData) {
-      console.log(JSON.stringify(userData) === '({})')
-      // console.table(userData)
+      this.users.push(userData);
     },
     deleteUser(index) {
       this.users.splice(index, 1)
@@ -75,6 +81,13 @@ export default {
 
 <style scoped>
 .mdc-list {
-  margin-top: 100px;
+  max-width: 600px;
+  margin: 2rem auto;
+}
+.mdc-list-item__text, .material-icons {
+  color: var(--color-text);
+}
+.no-register {
+  margin: 0 auto;
 }
 </style>
