@@ -1,5 +1,9 @@
 <template>
-  <div class="form">
+  <div class="form" v-if="isVisible">
+    <button class="mdc-fab inline-demo-fab mdc-ripple-upgraded" v-on:click="closeForm">
+      <div class="mdc-fab__ripple"></div>      
+      <i aria-hidden="true" class="material-icons mdc-fab__icon">close</i>
+    </button>
     <label class="mdc-text-field mdc-text-field--filled">
       <span class="mdc-text-field__ripple"></span>
       <input class="mdc-text-field__input" type="text" aria-labelledby="name" v-model="name">
@@ -32,13 +36,6 @@
         </span>
         <div class="mdc-button__touch"></div>
       </button>
-      <button class="cancel mdc-button mdc-button--touch" v-on:click="cancel">
-        <div class="mdc-button__ripple"></div>
-        <span class="mdc-button__label">
-          CANCELAR
-        </span>
-        <div class="mdc-button__touch"></div>
-      </button>
     </div>
   </div>
 </template>
@@ -46,13 +43,13 @@
 <script>
 export default {
   name: 'UserForm',
-  props: ['user'],
+  props: ['user', 'isVisible'],
   data() {
     return {
         cpf: '',
         name: '',
         email: '',
-        phone: ''
+        phone: '',
     }
   },
   methods: {
@@ -64,8 +61,8 @@ export default {
         phone: this.phone
       })
     },
-    cancel() {
-      console.log('limpar form e fechar');
+    closeForm() {
+      this.isVisible = false
     }
   },
   watch: {
@@ -81,11 +78,15 @@ export default {
 
 <style scoped>
 .form {
+  position: absolute;
   width: 100vw;
   height: 100vh;
+  background: var(--color-background);
   left: 0;
   top: 0;
-  z-index: 10;
+  z-index: 5;
+  justify-content: center;
+  align-items: center;
 }
 .mdc-text-field {
   background-color: #202024;
@@ -112,7 +113,8 @@ export default {
   align-items: center;
 }
 .mdc-button {
-  width: 100px;
+  width: 230px;
+  height: 50px;
   font-size: 0.9rem;
   background-color: var(--color-primary);
   box-shadow: 0px 4px 0px var(--color-secondary);
@@ -122,8 +124,10 @@ export default {
   border: none;
   outline: 0;
 }
-.mdc-button.cancel {
-  background-color: var(--color-dark);
-  margin-left: 1rem;
+.mdc-fab {
+  background-color: var(--color-secondary);
+  position: absolute;
+  right: 1rem;
+  top: 1rem;
 }
 </style>

@@ -1,7 +1,19 @@
 <template>
   <div>
-    <Header v-bind:title="title" />
-    <UserForm v-on:save-user="saveUser" v-bind:user="user" />
+    <header class="mdc-top-app-bar mdc-top-app-bar--short">
+      <div class="mdc-top-app-bar__row">
+        <section class="mdc-top-app-bar__section mdc-top-app-bar__section--align-start">
+          <span class="mdc-top-app-bar__title">Contatos</span>
+        </section>
+        <section class="mdc-top-app-bar__section mdc-top-app-bar__section--align-end">
+          <button class="mdc-button mdc-button--raised" v-on:click="openForm">
+            <div class="mdc-button__ripple"></div>
+            <i class="material-icons mdc-button__icon" aria-hidden="true">add</i>
+            <span class="mdc-button__label">Novo</span>
+          </button>
+        </section>
+      </div>
+    </header>
     <ul class="mdc-list inline-demo-list mdc-list--avatar-list">
       <li class="mdc-list-item mdc-ripple-upgraded" v-if="users.length <= 0">
         <span class="mdc-list-item__text no-register">
@@ -21,27 +33,23 @@
         </span>
       </li>
     </ul>
+    <UserForm v-on:save-user="saveUser" v-bind:user="user" v-bind:isVisible="formIsVisible" />
   </div>
 </template>
 
 <script>
-import Header from './Header.vue'
 import UserForm from './UserForm.vue'
 
 export default {
   name: 'UserList',
   components: {
-    Header,
     UserForm
   },
   data() {
     return {
-      title: {
-        header: 'Contatos',
-        button: 'Novo'
-      },
       users: [],
-      user: {}
+      user: {},
+      formIsVisible: false
     }
   },
   mounted() {
@@ -69,6 +77,9 @@ export default {
     deleteUser(index) {
       this.users.splice(index, 1)
     },
+    openForm() {
+      this.formIsVisible = true
+    }
   },
   watch: {
     users() {
@@ -80,6 +91,18 @@ export default {
 </script>
 
 <style scoped>
+.mdc-top-app-bar {
+  background: var(--color-primary);
+  color: var(--color-text);
+  position: relative;
+}
+.mdc-top-app-bar__title {
+  font-weight: bold;
+}
+.mdc-button--raised {
+  background: var(--color-secondary);
+  color: var(--color-text);
+}
 .mdc-list {
   max-width: 600px;
   margin: 2rem auto;
