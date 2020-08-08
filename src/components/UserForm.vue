@@ -1,5 +1,5 @@
 <template>
-  <div class="form" v-if="isVisible">
+  <div class="form" v-if="formIsVisible">
     <button class="mdc-fab inline-demo-fab mdc-ripple-upgraded" v-on:click="closeForm">
       <div class="mdc-fab__ripple"></div>      
       <i aria-hidden="true" class="material-icons mdc-fab__icon">close</i>
@@ -12,7 +12,7 @@
     </label>
     <label class="mdc-text-field mdc-text-field--filled">
       <span class="mdc-text-field__ripple"></span>
-      <input class="mdc-text-field__input" type="text" aria-labelledby="cpf" v-model="cpf">
+      <input class="mdc-text-field__input" type="text" ref="cpf" aria-labelledby="cpf" v-model="cpf">
       <span class="mdc-floating-label" id="cpf">CPF</span>
       <span class="mdc-line-ripple"></span>
     </label>
@@ -43,7 +43,7 @@
 <script>
 export default {
   name: 'UserForm',
-  props: ['user', 'isVisible'],
+  props: ['user', 'formIsVisible'],
   data() {
     return {
         cpf: '',
@@ -54,7 +54,14 @@ export default {
   },
   methods: {
     saveUser() {
+      if(!this.cpf){
+        this.cpf.focus
+        console.log('preencha o cpf')
+        return
+      }      
+      
       this.$emit('save-user', {
+        index: this.user.index,
         cpf: this.cpf,
         name: this.name,
         email: this.email,
@@ -62,7 +69,7 @@ export default {
       })
     },
     closeForm() {
-      this.isVisible = false
+      this.$emit('close-form')
     }
   },
   watch: {
@@ -85,6 +92,8 @@ export default {
   left: 0;
   top: 0;
   z-index: 5;
+  display: flex;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
 }
@@ -98,19 +107,13 @@ export default {
 .mdc-floating-label {
   color: var(--color-text) !important;
   caret-color: var(--color-text);
-  transition: opacity 0.5s;
+  transition: opacity 0.3s;
 }
 .mdc-text-field__input:focus ~ .mdc-line-ripple::before {
   border-bottom-color: var(--color-primary) !important;
 }
 .mdc-text-field__input:focus + .mdc-floating-label {
   opacity: 0;
-}
-.form {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
 }
 .mdc-button {
   width: 230px;
@@ -125,7 +128,8 @@ export default {
   outline: 0;
 }
 .mdc-fab {
-  background-color: var(--color-secondary);
+  background: var(--color-secondary);
+  color: var(--color-text);
   position: absolute;
   right: 1rem;
   top: 1rem;

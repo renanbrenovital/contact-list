@@ -18,7 +18,6 @@ export default {
 <style>
 :root {
   --color-background: #121212;
-  --color-dark: #111111;
   --color-text: #E1E1E1;
   --color-primary: #7A4CE5;
   --color-secondary: #202024;

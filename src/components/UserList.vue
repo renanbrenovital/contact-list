@@ -28,12 +28,17 @@
           {{user.name}}
         </span>
         <span aria-hidden="true" class="mdc-list-item__meta">
-          <button class="material-icons mdc-icon-button mdc-card__action mdc-card__action--icon" title="Editar Usuário" v-on:click="editUser(user)">edit</button>
+          <button class="material-icons mdc-icon-button mdc-card__action mdc-card__action--icon" title="Editar Usuário" v-on:click="editUser(index, user)">edit</button>
           <button class="material-icons mdc-icon-button mdc-card__action mdc-card__action--icon" title="Deletar Usuário" v-on:click="deleteUser(index)">delete</button>
         </span>
       </li>
     </ul>
-    <UserForm v-on:save-user="saveUser" v-bind:user="user" v-bind:isVisible="formIsVisible" />
+    <UserForm
+      v-on:save-user="saveUser"
+      v-on:close-form="closeForm"
+      v-bind:user="user"
+      v-bind:formIsVisible="formIsVisible" 
+    />
   </div>
 </template>
 
@@ -68,23 +73,34 @@ export default {
           .catch(error => console.error(error))
       } 
     },
-    editUser(userData) {
+    editUser(index, userData) {
+      userData.index = index
       this.user = userData
+      this.openForm()
     },
     saveUser(userData) {
-      this.users.push(userData);
+      if(isNaN(userData.index)) {
+        this.users.push(userData);
+      }
+      else {
+        this.users.splice(userData.index, 1, userData)
+      }
     },
     deleteUser(index) {
       this.users.splice(index, 1)
     },
     openForm() {
       this.formIsVisible = true
+    },
+    closeForm() {
+      this.user = {}
+      this.formIsVisible = false
     }
   },
   watch: {
     users() {
       localStorage.users = JSON.stringify(this.users)
-      this.user = {}
+      this.closeForm()
     }
   },
 }
