@@ -20,7 +20,7 @@
     <span class="error-message" v-if="error.cpf">{{error.cpf}}</span>
     <label class="mdc-text-field mdc-text-field--filled">
       <span class="mdc-text-field__ripple"></span>
-      <input class="mdc-text-field__input" ref="email" v-bind:class="{ error: error.email }" v-on:input="cleanInput('email')" type="text" aria-labelledby="email" v-model="email">
+      <input class="mdc-text-field__input" ref="email" v-bind:class="{ error: error.email }" v-on:input="cleanInput('email')" type="email" aria-labelledby="email" v-model="email">
       <span class="mdc-floating-label" id="email" v-if="!email">E-mail</span>
       <span class="mdc-line-ripple"></span>
     </label>
