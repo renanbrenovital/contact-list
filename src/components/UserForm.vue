@@ -6,28 +6,32 @@
     </button>
     <label class="mdc-text-field mdc-text-field--filled">
       <span class="mdc-text-field__ripple"></span>
-      <input class="mdc-text-field__input" type="text" aria-labelledby="name" v-model="name">
-      <span class="mdc-floating-label" id="cpf">Nome Completo</span>
+      <input class="mdc-text-field__input" v-bind:class="{ error: error.name }" v-on:input="cleanInput('name')" type="text" aria-labelledby="name" v-model="name">
+      <span class="mdc-floating-label" id="cpf" v-if="!name">Nome Completo</span>
       <span class="mdc-line-ripple"></span>
     </label>
+    <span class="error-message" v-if="error.name">{{error.name}}</span>
     <label class="mdc-text-field mdc-text-field--filled">
       <span class="mdc-text-field__ripple"></span>
-      <input class="mdc-text-field__input" type="text" ref="cpf" aria-labelledby="cpf" v-model="cpf">
-      <span class="mdc-floating-label" id="cpf">CPF</span>
+      <input class="mdc-text-field__input" v-bind:class="{ error: error.cpf }" v-on:input="cleanInput('cpf')" type="text" aria-labelledby="cpf" v-model="cpf">
+      <span class="mdc-floating-label" id="cpf" v-if="!cpf">CPF</span>
       <span class="mdc-line-ripple"></span>
     </label>
+    <span class="error-message" v-if="error.cpf">{{error.cpf}}</span>
     <label class="mdc-text-field mdc-text-field--filled">
       <span class="mdc-text-field__ripple"></span>
-      <input class="mdc-text-field__input" type="text" aria-labelledby="email" v-model="email">
-      <span class="mdc-floating-label" id="email">E-mail</span>
+      <input class="mdc-text-field__input" v-bind:class="{ error: error.email }" v-on:input="cleanInput('email')" type="text" aria-labelledby="email" v-model="email">
+      <span class="mdc-floating-label" id="email" v-if="!email">E-mail</span>
       <span class="mdc-line-ripple"></span>
     </label>
+    <span class="error-message" v-if="error.email">{{error.email}}</span>
     <label class="mdc-text-field mdc-text-field--filled">
       <span class="mdc-text-field__ripple"></span>
-      <input class="mdc-text-field__input" type="text" aria-labelledby="phone" v-model="phone">
-      <span class="mdc-floating-label" id="phone">Telefone</span>
+      <input class="mdc-text-field__input" v-bind:class="{ error: error.phone }" v-on:input="cleanInput('phone')" type="text" aria-labelledby="phone" v-model="phone">
+      <span class="mdc-floating-label" id="phone" v-if="!phone">Telefone</span>
       <span class="mdc-line-ripple"></span>
     </label>
+    <span class="error-message" v-if="error.phone">{{error.phone}}</span>
     <div class="mdc-touch-target-wrapper">
       <button class="mdc-button mdc-button--touch" v-on:click="saveUser">
         <div class="mdc-button__ripple"></div>
@@ -46,29 +50,118 @@ export default {
   props: ['user', 'formIsVisible'],
   data() {
     return {
-        cpf: '',
         name: '',
+        cpf: '',
         email: '',
         phone: '',
+        error: {
+          name: '',
+          cpf: '',
+          email: '',
+          phone: '',
+        }
     }
   },
   methods: {
+    validate() {
+      const nameValid = name => {
+        if(typeof name !== "string") return false
+        return true
+      }
+
+      const cpfValid = cpf => {
+        if (typeof cpf !== "string") return false
+        if (cpf.length !== 11) return false
+        return true
+      }
+
+      const emailValid = email => {
+        if (typeof email !== "string") return false
+        return true
+      }
+
+      const phoneValid = phone => {
+        if (typeof phone !== "string") return false
+        return true
+      }
+
+      const isValidName = () => {
+        if(!this.name)
+          this.error.name = 'Nome é obrigatório'
+        else if (!nameValid(this.name))
+          this.error.name = 'Nome inválido'
+        else
+          this.error.name = ''
+
+        return this.error.name === ''
+      }
+
+      const isValidCPF = () => {
+        if(!this.cpf)
+          this.error.cpf = 'CPF é obrigatório'
+        else if (!cpfValid(this.cpf))
+          this.error.cpf = 'CPF inválido'
+        else
+          this.error.cpf = ''
+
+        const isValid = this.error.cpf === ''
+
+        return isValid
+      }
+
+      const isValidEmail = () => {
+        if(!this.email)
+          this.error.email = 'E-mail é obrigatório'
+        else if (!emailValid(this.email))
+          this.error.email = 'E-mail inválido'
+        else
+          this.error.email = ''
+        
+        return this.error.email === ''
+      }
+
+      const isValidPhone = () => {
+        if(!this.phone)
+          this.error.phone = 'Telefone é obrigatório'
+        else if (!phoneValid(this.phone)) 
+          this.error.phone = 'Telefone inválido'
+        else
+          this.error.phone = ''
+        return this.error.phone === ''
+      }
+
+      return { 
+        isValidName,
+        isValidCPF,
+        isValidEmail,
+        isValidPhone
+      }
+    },    
     saveUser() {
-      if(!this.cpf){
-        this.cpf.focus
-        console.log('preencha o cpf')
-        return
-      }      
-      
-      this.$emit('save-user', {
-        index: this.user.index,
-        cpf: this.cpf,
-        name: this.name,
-        email: this.email,
-        phone: this.phone
-      })
+      const { isValidName, isValidCPF, isValidEmail, isValidPhone } = this.validate();    
+      if(isValidName() && isValidCPF() && isValidEmail() && isValidPhone()) {
+        this.$emit('save-user', {
+          index: this.user.index,
+          cpf: this.cpf,
+          name: this.name,
+          email: this.email,
+          phone: this.phone
+        })
+      } 
+    },
+    cleanInput(input) {
+      this.error[input] = ''
+    },
+    cleanForm() {      
+      this.error = {
+        name: '',
+        cpf: '',
+        email: '',
+        phone: ''
+      }
     },
     closeForm() {
+      this.cleanForm()
       this.$emit('close-form')
     }
   },
@@ -84,6 +177,10 @@ export default {
 </script>
 
 <style scoped>
+.error-message {
+  color: var(--color-error);
+  margin-bottom: 0.5rem;
+}
 .form {
   position: absolute;
   width: 100vw;
@@ -108,6 +205,10 @@ export default {
   color: var(--color-text) !important;
   caret-color: var(--color-text);
   transition: opacity 0.3s;
+}
+.mdc-text-field__input.error ~ .mdc-line-ripple::before,
+.mdc-text-field__input.error:focus ~ .mdc-line-ripple::before {
+  border-bottom-color: var(--color-error) !important;
 }
 .mdc-text-field__input:focus ~ .mdc-line-ripple::before {
   border-bottom-color: var(--color-primary) !important;
