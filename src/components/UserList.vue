@@ -14,8 +14,20 @@
         </section>
       </div>
     </header>
+    <div role="progressbar" class="mdc-linear-progress mdc-linear-progress--indeterminate" v-bind:class="{'mdc-linear-progress--closed': !loading }" aria-label="Loading...">
+      <div class="mdc-linear-progress__buffer">
+        <div class="mdc-linear-progress__buffer-bar"></div>
+        <div class="mdc-linear-progress__buffer-dots"></div>
+      </div>
+      <div class="mdc-linear-progress__bar mdc-linear-progress__primary-bar">
+        <span class="mdc-linear-progress__bar-inner"></span>
+      </div>
+      <div class="mdc-linear-progress__bar mdc-linear-progress__secondary-bar">
+        <span class="mdc-linear-progress__bar-inner"></span>
+      </div>
+    </div>
     <ul class="mdc-list inline-demo-list mdc-list--avatar-list">
-      <li class="mdc-list-item mdc-ripple-upgraded" v-if="users.length <= 0">
+      <li class="mdc-list-item mdc-ripple-upgraded" v-if="!loading && users.length <= 0">
         <span class="mdc-list-item__text no-register">
           Nenhum contado cadastrado
         </span>
@@ -54,24 +66,28 @@ export default {
     return {
       users: [],
       user: {},
-      formIsVisible: false
+      formIsVisible: false,
+      loading: false
     }
   },
   mounted() {
     this.getUsers()
   },
   methods: {
-    getUsers() {
-      if (localStorage.users) {
-        this.users = JSON.parse(localStorage.users)
+    async getUsers() {
+      try {
+        this.loading = true
+        
+        if (localStorage.users)
+          this.users = JSON.parse(localStorage.users)
+        else
+          this.users = await (await fetch('https://api.mocki.io/v1/a2790e8c')).json()
+            
+        this.loading = false
       }
-      else 
-      {
-        fetch('https://api.mocki.io/v1/a2790e8c')
-          .then(response => response.json())
-          .then(data => this.users = data)
-          .catch(error => console.error(error))
-      } 
+      catch (error) {
+        console.log(error)
+      }
     },
     editUser(index, userData) {
       userData.index = index
